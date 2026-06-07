@@ -96,35 +96,6 @@ public class EntityHarvester extends EntityMob {
 	
 	@Override
 	public void onLivingUpdate() {
-		//Disappear in sunlight when it has no attack target
-		if (world.isDaytime() && !world.isRemote && getAttackTarget() == null)
-        {
-            float f = getBrightness();
-
-            if (f > 0.5F && rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && world.canSeeSky(new BlockPos(posX, posY + getEyeHeight(), posZ)))
-            {
-                boolean flag = true;
-                ItemStack itemstack = getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-
-                if (!itemstack.isEmpty())
-                {
-                    if (itemstack.isItemStackDamageable())
-                    {
-                        itemstack.setItemDamage(itemstack.getItemDamage() + rand.nextInt(2));
-
-                        if (itemstack.getItemDamage() >= itemstack.getMaxDamage())
-                        {
-                            renderBrokenItemStack(itemstack);
-                            setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
-                        }
-                    }
-
-                    flag = false;
-                }
-
-                if (flag) setDead();
-            }
-        }
 		super.onLivingUpdate();
 	}
 
@@ -438,9 +409,8 @@ public class EntityHarvester extends EntityMob {
 			//Attack
 			if (phase == 1 && time % 10 == 0) {
 				if (target != null && target.isEntityAlive()) {
-					double yMin = target.onGround ? target.posY - 1 : target.posY - 3;
 		            float f = (float)MathHelper.atan2(target.posZ - harvester.posZ, target.posX - harvester.posX);
-					spawnFangs(target.posX, target.posZ, yMin, target.posY + 1, f, 0);
+					spawnFangs(target.posX, target.posZ, target.posY + 1, f, 0);
 				}
 			}
 			//Change phase
@@ -453,42 +423,25 @@ public class EntityHarvester extends EntityMob {
 		}
 		
 		//Adapted from the Evoker
-		private void spawnFangs(double x, double z, double yMin, double yStart, float yaw, int delayTick) {
-            BlockPos blockpos = new BlockPos(x, yStart, z);
-            boolean flag = false;
+		private void spawnFangs(double x, double z, double y, float yaw, int delayTick) {
+            BlockPos blockpos = new BlockPos(x, y, z);
             double d0 = 0.0D;
 
-            while (true)
-            {
-                if (!harvester.world.isBlockNormalCube(blockpos, true) && harvester.world.isBlockNormalCube(blockpos.down(), true))
-                {
-                    if (!harvester.world.isAirBlock(blockpos))
-                    {
-                        IBlockState iblockstate = harvester.world.getBlockState(blockpos);
-                        AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(harvester.world, blockpos);
+            for (int i = 0; i < 2; i++) {
+                if (!harvester.world.isAirBlock(blockpos)) {
+                    IBlockState state = harvester.world.getBlockState(blockpos);
+                    AxisAlignedBB bb = state.getCollisionBoundingBox(harvester.world, blockpos);
 
-                        if (axisalignedbb != null)
-                        {
-                            d0 = axisalignedbb.maxY;
-                        }
+                    if (bb != null) {
+                        d0 = bb.maxY;
                     }
 
-                    flag = true;
-                    break;
+                    EntityEvokerFangs entityevokerfangs = new EntityEvokerFangs(harvester.world, x, (double)blockpos.getY() + d0, z, yaw, delayTick, harvester);
+                    harvester.world.spawnEntity(entityevokerfangs);
+                    return;
+                } else {
+                    blockpos = blockpos.down();
                 }
-
-                blockpos = blockpos.down();
-
-                if (blockpos.getY() < MathHelper.floor(yMin) - 1)
-                {
-                    break;
-                }
-            }
-
-            if (flag)
-            {
-                EntityEvokerFangs entityevokerfangs = new EntityEvokerFangs(harvester.world, x, (double)blockpos.getY() + d0, z, yaw, delayTick, harvester);
-                harvester.world.spawnEntity(entityevokerfangs);
             }
         }
 	}
