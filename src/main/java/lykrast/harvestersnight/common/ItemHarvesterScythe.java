@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,6 +17,9 @@ import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemHarvesterScythe extends ItemSword {
 
@@ -39,7 +43,24 @@ public class ItemHarvesterScythe extends ItemSword {
     public boolean canDestroyBlockInCreative(World world, BlockPos pos, ItemStack stack, EntityPlayer player) {
     	return true;
     }
-    
+
+    @Override
+    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+        stack.damageItem(1, attacker);
+
+        attacker.heal(2.0F);
+
+        return true;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag) {
+        tooltip.add("§a*Harvests leaves, vines, plants and cobwebs in a 7x3x7 area");
+        tooltip.add("§a*Lifesteal");
+    }
+
+
+
     //Adapted from the CoFH Core sickles
     //https://github.com/CoFH/CoFHCore/blob/1.12/src/main/java/cofh/core/item/tool/ItemSickleCore.java
     @Override
