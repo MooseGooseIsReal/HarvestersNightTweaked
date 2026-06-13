@@ -44,31 +44,8 @@ public class HarvestersNight {
 	
 	//Shoving everything in this class since it's not gonna be a big mod
 	public static ToolMaterial harvesterMaterial;
-	public static Item harvesterScythe;
 	
 	public static SoundEvent harvesterCharge, harvesterSpell, harvesterSpawn, harvesterHurt, harvesterDie;
-
-	@SubscribeEvent
-	public static void registerItems(RegistryEvent.Register<Item> event) {
-		//Only one item so inlining my usual helper functions
-		harvesterMaterial = EnumHelper.addToolMaterial("harvester", 
-				ToolMaterial.IRON.getHarvestLevel(), 
-				1323, 
-				ToolMaterial.IRON.getEfficiency(), 
-				ToolMaterial.IRON.getAttackDamage(), 
-				ToolMaterial.IRON.getEnchantability());
-		harvesterScythe = new ItemHarvesterScythe(harvesterMaterial)
-				.setRegistryName(new ResourceLocation(MODID, "harvester_scythe"))
-				.setUnlocalizedName(MODID + ".harvester_scythe")
-				.setCreativeTab(CreativeTabs.TOOLS);
-		event.getRegistry().register(harvesterScythe);
-	}
-	
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public static void registerModels(ModelRegistryEvent evt) {
-		ModelLoader.setCustomModelResourceLocation(harvesterScythe, 0, new ModelResourceLocation(harvesterScythe.getRegistryName(), "inventory"));
-	}
 	
 	@SubscribeEvent
 	public static void registerEntities(RegistryEvent.Register<EntityEntry> event) {

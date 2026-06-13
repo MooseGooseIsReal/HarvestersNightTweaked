@@ -2,6 +2,9 @@ package lykrast.harvestersnight.common;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.init.Enchantments;
+import net.minecraft.item.Item;
 import org.apache.commons.lang3.ArrayUtils;
 
 import net.minecraft.block.state.IBlockState;
@@ -125,19 +128,26 @@ public class EntityHarvester extends EntityMob {
 	@Override
     @Nullable
 	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
-		setEquipmentBasedOnDifficulty(difficulty);
-		//setEnchantmentBasedOnDifficulty(difficulty);
-		
+        Item item = Item.REGISTRY.getObject(new ResourceLocation("spartanweaponry:scythe_iron"));
+
+        ItemStack stack = new ItemStack(item);
+
+        stack.addEnchantment(Enchantments.FIRE_ASPECT, 2);
+        Enchantment lifesteal = Enchantment.REGISTRY.getObject(new ResourceLocation("somanyenchantments:lifesteal"));
+
+        stack.addEnchantment(lifesteal, 3);
+
+
+
+        setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+
+        setDropChance(EntityEquipmentSlot.MAINHAND, 0.0F);
+
+
         if (HarvestersNightConfig.lightning) world.addWeatherEffect(new EntityLightningBolt(world, posX, posY, posZ, true));
         if (HarvestersNightConfig.laugh) playSound(HarvestersNight.harvesterSpawn, 8, 1);
 		
 		return super.onInitialSpawn(difficulty, livingdata);
-	}
-
-	@Override
-	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-		setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(HarvestersNight.harvesterScythe));
-		setDropChance(EntityEquipmentSlot.MAINHAND, 0);
 	}
 
 	@Override
@@ -427,7 +437,7 @@ public class EntityHarvester extends EntityMob {
             BlockPos blockpos = new BlockPos(x, y, z);
             double d0 = 0.0D;
 
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 4; i++) {
                 if (!harvester.world.isAirBlock(blockpos)) {
                     IBlockState state = harvester.world.getBlockState(blockpos);
                     AxisAlignedBB bb = state.getCollisionBoundingBox(harvester.world, blockpos);

@@ -1,6 +1,0 @@
-{
-    "parent": "item/handheld",
-    "textures": {
-        "layer0": "harvestersnight:items/harvester_scythe"
-    }
-}
